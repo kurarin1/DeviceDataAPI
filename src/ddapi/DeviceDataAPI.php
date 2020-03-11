@@ -75,7 +75,7 @@ class DeviceDataAPI extends PluginBase implements Listener
 
     /*API*/
 
-    public static function getInstance(){
+    public static function getInstance() : self {
         return self::$instance;
     }
 
