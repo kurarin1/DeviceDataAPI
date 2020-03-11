@@ -33,11 +33,15 @@ class DeviceDataAPI extends PluginBase implements Listener
     const INPUTMODE_TAP = 2;
     const INPUTMODE_CONTROLLER = 3;
 
+    private static $instance;
+
     private $preCache = [];
     private $cache = [];
 
     public function onEnable()
     {
+        self::$instance = $this;
+
         Server::getInstance()->getPluginManager()->registerEvents($this, $this);
     }
 
@@ -70,6 +74,10 @@ class DeviceDataAPI extends PluginBase implements Listener
     }
 
     /*API*/
+
+    public static function getInstance(){
+        return self::$instance;
+    }
 
     public function getDeviceOS(Player $player) : int
     {
