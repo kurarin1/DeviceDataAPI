@@ -33,10 +33,14 @@ class DeviceDataAPI extends PluginBase implements Listener
     const INPUTMODE_TAP = 2;
     const INPUTMODE_CONTROLLER = 3;
 
+    /* @var $instance DeviceDataAPI*/
     private static $instance;
 
     private $preCache = [];
     private $cache = [];
+
+    /* @var $tasks ClosureTask[]*/
+    private $tasks = [];
 
     public function onEnable()
     {
@@ -50,11 +54,14 @@ class DeviceDataAPI extends PluginBase implements Listener
         if($pk instanceof LoginPacket){
             $key = $pk->username;
             $this->preCache[$key] = $pk->clientData;
-            $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
+            if(isset($this->tasks[$key])) $this->tasks[$key]->getHandler()->cancel();
+            $this->tasks[$key] = new ClosureTask(
                 function (int $currentTick) use ($key): void {
                     unset($this->preCache[$key]);
+                    unset($this->tasks[$key]);
                 }
-            ), 20 * 10);
+            );
+            $this->getScheduler()->scheduleDelayedTask($this->tasks[$key], 20 * 30);
         }
     }
 
@@ -63,6 +70,7 @@ class DeviceDataAPI extends PluginBase implements Listener
         if(isset($this->preCache[$key])){
             $this->cache[$key] = $this->preCache[$key];
             unset($this->preCache[$key]);
+            unset($this->tasks[$key]);
         }
         else{
             Server::getInstance()->getLogger()->warning("[" . $this->getName() . "]" . $key . "のクライアントデータを取得できませんでした");
