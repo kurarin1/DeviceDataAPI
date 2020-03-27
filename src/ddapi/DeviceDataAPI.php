@@ -54,7 +54,7 @@ class DeviceDataAPI extends PluginBase implements Listener
                 function (int $currentTick) use ($key): void {
                     unset($this->preCache[$key]);
                 }
-            ), 20 * 30);
+            ), 20 * 10);
         }
     }
 
